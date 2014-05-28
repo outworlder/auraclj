@@ -1,9 +1,9 @@
 (ns auraclj.core
   (:gen-class)
   (:require [clj-http.client :as client]
-            [clojure.xml :as xml]
+            [clojure.data.xml :as xml]
             [clojure.zip :as zip])
-  (:use [clojure.data.zip.xml :only (attr attr= text xml->)])
+  (:use [clojure.data.zip.xml])
   (:import [java.io ByteArrayInputStream]))
 
 ;; API Endpoints
@@ -24,9 +24,11 @@
   "Retrieves data from the marketstat endpoint"
   [typeid]
   (let [return (client/get marketstat { :query-params { :typeid typeid } })]
-    (if (:body return)
-      (zip/xml-zip
-       (xml/parse (string-to-stream (:body return)))))))
+    (xml/parse (string-to-stream (:body return)))))
+
+(defn parse-marketstat
+  [data]
+  (zip/xml-zip data))
 
 ;;; Parsing
 ;;; http://stackoverflow.com/questions/1194044/clojure-xml-parsing?rq=1
